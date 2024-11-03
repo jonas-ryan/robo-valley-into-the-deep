@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class MecanumDriveRobotCentric extends LinearOpMode {
 
     private double slowSpeed = 0.333;
-    private double speedMultiplier = 0.666;
+    private double speedMultiplier = 1.0;
     private double slideSlowSpeed = 0.333;
     private double wormSlowSpeed = 0.333;
     private int slideSafetyMaximum = 4200;
@@ -26,7 +26,7 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
 
     private DcMotor wormGear = null;
     private DcMotor linearSlide = null;
-    private CRServo intake = null;
+    private CRServo clawWrist = null;
     private Servo claw = null;
 
     @Override
@@ -53,8 +53,8 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intake = hardwareMap.get(CRServo.class, "intake");
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
+        clawWrist = hardwareMap.get(CRServo.class, "intake");
+        clawWrist.setDirection(DcMotorSimple.Direction.FORWARD);
         claw = hardwareMap.get(Servo.class, "claw");
 
         telemetry.addData("Status", "Initialized");
@@ -65,38 +65,37 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double axial    = -gamepad1.right_stick_y;
-            double lateral  =  gamepad1.right_stick_x;
-            double yaw      =  gamepad1.left_stick_x;
-            boolean slow    =  gamepad1.left_bumper;
-            boolean reverse =  gamepad1.right_bumper;
+            double controlAxial = -gamepad1.right_stick_y;
+            double controlLateral =  gamepad1.right_stick_x;
+            double controlYaw =  gamepad1.left_stick_x;
+            boolean controlSlow =  gamepad1.left_bumper;
+            boolean controlReverse =  gamepad1.right_bumper;
 
-            double slide      =  -gamepad2.right_stick_y;
-            double worm       = -gamepad2.left_stick_y;
-            boolean slideSlow =  gamepad2.left_bumper;
-            boolean intakeCW  =  false; //gamepad2.a;
-            boolean intakeCCW =  false; //gamepad2.b;
+            double controlSlide =  -gamepad2.right_stick_y;
+            double controlWorm = -gamepad2.left_stick_y;
+            boolean controlSlideSlow =  gamepad2.left_bumper;
+            double controlClawRotation =  gamepad2.right_trigger - gamepad2.left_trigger;
             boolean controlClawOpen = gamepad2.b;
             boolean controlClawClosed = gamepad2.a;
 
             // DRIVETRAIN BLOCK
 
-            if (slow) {
-                axial *= slowSpeed;
-                lateral *= slowSpeed;
-                yaw *= slowSpeed;
+            if (controlSlow) {
+                controlAxial *= slowSpeed;
+                controlLateral *= slowSpeed;
+                controlYaw *= slowSpeed;
             }
-            if (reverse) {
-                axial *= -1;
-                lateral *= -1;
+            if (controlReverse) {
+                controlAxial *= -1;
+                controlLateral *= -1;
             }
 
             double max;
 
-            double leftFrontPower  = axial + lateral + yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
-            double rightFrontPower = axial - lateral - yaw;
+            double leftFrontPower  = controlAxial + controlLateral + controlYaw;
+            double leftBackPower   = controlAxial - controlLateral + controlYaw;
+            double rightBackPower  = controlAxial + controlLateral - controlYaw;
+            double rightFrontPower = controlAxial - controlLateral - controlYaw;
 
             leftFrontPower *= speedMultiplier;
             leftBackPower *= speedMultiplier;
@@ -131,38 +130,30 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
             // }
 
             // Reduces slide and worm gear speeds if the slow button is held.
-            if (slideSlow) {
-                slide *= slideSlowSpeed;
-                worm *= wormSlowSpeed;
+            if (controlSlideSlow) {
+                controlSlide *= slideSlowSpeed;
+                controlWorm *= wormSlowSpeed;
             }
             // Checks if the linear slide is past the maximum and then if power is trying to be applied in that direction, set it to zero.
-            if (linearSlide.getCurrentPosition() > slideSafetyMaximum && slide > 0) {
-                slide = 0;
+            if (linearSlide.getCurrentPosition() > slideSafetyMaximum && controlSlide > 0) {
+                controlSlide = 0;
             }
             // Checks if the linear slide is below a certain threshold and then limits the speed of the motor if it is being powered towards the starting position.
-            if (linearSlide.getCurrentPosition() < slideSafetyMinimum && slide < 0) {
-                slide *= slideSafetySpeed;
+            if (linearSlide.getCurrentPosition() < slideSafetyMinimum && controlSlide < 0) {
+                controlSlide *= slideSafetySpeed;
             }
             // Sets the powers of the slide and worm gear.
-            linearSlide.setPower(slide);
-            wormGear.setPower(worm);
+            linearSlide.setPower(controlSlide);
+            wormGear.setPower(controlWorm);
 
-            // Checks if the intake buttons are held and then rotates the servo accordingly.
-            if (intakeCW) {
-                intake.setPower(0.1);
-            } else if (intakeCCW) {
-                intake.setPower(-0.1);
-            } else {
-                intake.setPower(0);
-            }
+            // Checks if the claw rotation buttons are held and then rotates the servo accordingly.
+            clawWrist.setPower(controlClawRotation);
 
             if (controlClawOpen) {
                 claw.setPosition(0.25);
             } else if (controlClawClosed) {
                 claw.setPosition(0);
             }
-
-
 
             // Telemetry updates in case there is any telemetry that needs to be displayed.
             telemetry.update();
