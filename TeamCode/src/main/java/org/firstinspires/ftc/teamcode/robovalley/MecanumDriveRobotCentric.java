@@ -53,7 +53,7 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        clawWrist = hardwareMap.get(CRServo.class, "intake");
+        clawWrist = hardwareMap.get(CRServo.class, "clawWrist");
         clawWrist.setDirection(DcMotorSimple.Direction.FORWARD);
         claw = hardwareMap.get(Servo.class, "claw");
 
@@ -146,8 +146,8 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
             linearSlide.setPower(controlSlide);
             wormGear.setPower(controlWorm);
 
-            // Checks if the claw rotation buttons are held and then rotates the servo accordingly.
-            clawWrist.setPower(controlClawRotation);
+            // Rotates the wrist based on the triggers.
+            clawWrist.setPower(controlClawRotation * 0.1);
 
             if (controlClawOpen) {
                 claw.setPosition(0.25);
