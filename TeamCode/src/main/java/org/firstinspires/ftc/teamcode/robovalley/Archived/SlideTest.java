@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robovalley;
+package org.firstinspires.ftc.teamcode.robovalley.Archived;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="SlideTest")
+@Disabled
 public class SlideTest extends LinearOpMode {
 
     private DcMotor linearSlide = null;
