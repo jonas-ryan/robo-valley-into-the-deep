@@ -15,11 +15,7 @@ public class WormPIDTest extends LinearOpMode {
     private PIDController controller;
 
     public static double p = 0.01, i = 0.2, d = 0.0002;
-    public static double f = 0;
-
     public static int target = 0;
-
-    private final double ticksInDegree = 39.94444444444447;
 
     private DcMotorEx wormGear;
 
@@ -37,16 +33,13 @@ public class WormPIDTest extends LinearOpMode {
         while (opModeIsActive()) {
             controller.setPID(p, i, d);
             int armPosition = wormGear.getCurrentPosition();
-            double pid = controller.calculate(armPosition, target);
-            double ff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;
+            double power = controller.calculate(armPosition, target);
 
-            double power = pid + ff;
-
-            if (Math.abs(power) < 0.05) {
-                power = 0;
+            if (Math.abs(target - armPosition) > 7) {
+                wormGear.setPower(power);
+            } else {
+                wormGear.setPower(0);
             }
-
-            wormGear.setPower(power);
 
             telemetry.addData("pos", armPosition);
             telemetry.addData("target", target);
