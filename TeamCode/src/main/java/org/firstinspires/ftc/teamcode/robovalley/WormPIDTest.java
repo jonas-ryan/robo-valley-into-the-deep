@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class WormPIDTest extends LinearOpMode {
     private PIDController controller;
 
-    public static double p = 0.01, i = 0.05, d = 0.0002;
-    public static double f = 0.01;
+    public static double p = 0.01, i = 0.2, d = 0.0002;
+    public static double f = 0;
 
     public static int target = 0;
 
@@ -42,10 +42,15 @@ public class WormPIDTest extends LinearOpMode {
 
             double power = pid + ff;
 
+            if (Math.abs(power) < 0.05) {
+                power = 0;
+            }
+
             wormGear.setPower(power);
 
             telemetry.addData("pos", armPosition);
             telemetry.addData("target", target);
+            telemetry.addData("power", power);
             telemetry.update();
         }
     }
