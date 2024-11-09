@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class MecanumDriveRobotCentric extends LinearOpMode {
 
     private double slowSpeed = 0.333;
-    private double speedMultiplier = 0.666;
+    private double speedMultiplier = 0.85;
     private double slideSlowSpeed = 0.333;
     private double wormSlowSpeed = 0.333;
     private int slideSafetyMaximum = 4200;
@@ -51,12 +51,12 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
         wormGear = hardwareMap.get(DcMotor.class, "wormGear");
         wormGear.setDirection(DcMotorSimple.Direction.FORWARD);
         wormGear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        wormGear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //wormGear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wormGear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         clawWrist = hardwareMap.get(CRServo.class, "clawWrist");
         clawWrist.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -166,9 +166,9 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
 
             // Checks if the claw buttons are pressed and sets the position of the claw accordingly.
             if (controlClawOpen) {
-                claw.setPosition(0.25);
+                claw.setPosition(0.3);
             } else if (controlClawClosed) {
-                claw.setPosition(0);
+                claw.setPosition(0.05);
             }
 
 
