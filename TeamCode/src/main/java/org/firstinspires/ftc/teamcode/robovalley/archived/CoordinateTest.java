@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.robovalley;
+package org.firstinspires.ftc.teamcode.robovalley.archived;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(name="CoordinateTest")
+@Disabled
 public class CoordinateTest extends LinearOpMode {
     private final double wormDegreesPerTick = 0.0250347705146036;
     private final double slideInchesPerTick = 0.0086977530804542;
@@ -31,6 +32,8 @@ public class CoordinateTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        targetX = 14;
+        targetY = 0;
         slideController = new PIDController(0.05, 0, 0.001);
         wormController = new PIDController(0.01, 0.2, 0.0002);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -63,8 +66,8 @@ public class CoordinateTest extends LinearOpMode {
                 targetY = Math.sin(Math.toRadians(wormPosition * wormDegreesPerTick)) * 14.1;
             }
 
-            if (targetX > 25) {
-                targetX = 25;
+            if (targetX > 30) {
+                targetX = 30;
             }
 
             if (targetY < -4) {
@@ -75,18 +78,17 @@ public class CoordinateTest extends LinearOpMode {
                 targetX = 0;
             }
 
-
             slideController.setPID(0.05, 0, 0.001);
             wormController.setPID(0.01, 0.2, 0.0002);
 
             // Uses inverse tangent to find the angle and then divides by degrees per tick to find correct target
             // Also rounds the output and casts to an integer
-            wormTarget =  (int) Math.round(Math.toDegrees(Math.atan2(targetY, targetX))/wormDegreesPerTick);
+            wormTarget = (int) Math.round(Math.toDegrees(Math.atan2(targetY, targetX)) / wormDegreesPerTick);
             // Uses the pythagorean theorem to find the length of slide and then divides by inches per tick to find correct target
             // Also rounds the output and casts to an integer
-            slideTarget = (int) Math.round((Math.hypot(targetX, targetY)-14)/slideInchesPerTick);
+            slideTarget = (int) Math.round((Math.hypot(targetX, targetY) - 14) / slideInchesPerTick);
 
-            double slidePower = slideController.calculate(slidePosition, slideTarget);
+            double slidePower = pController(slidePosition, slideTarget); //slideController.calculate
             double wormPower = wormController.calculate(wormPosition, wormTarget);
 
             if (Math.abs(slideTarget - slidePosition) > 1) {
@@ -103,4 +105,16 @@ public class CoordinateTest extends LinearOpMode {
             telemetry.update();
         }
     }
+    public double pController(double currentPosition, double targetPosition) {
+        double error = targetPosition - currentPosition;
+        if (Math.abs(error) > 80) {
+            if (error > 0) {
+                return 0.1;
+            } else {
+                return -0.1;
+            }
+        }
+        return 0;
+    }
 }
+

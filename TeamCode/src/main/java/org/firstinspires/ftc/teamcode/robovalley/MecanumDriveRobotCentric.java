@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robovalley;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -9,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Robot Centric", group="Mecanum Drive")
-//@Disabled
+@Disabled
 public class MecanumDriveRobotCentric extends LinearOpMode {
 
     private double slowSpeed = 0.333;
@@ -83,8 +84,8 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
             double controlWorm = -gamepad2.left_stick_y;
             boolean controlSlideSlow =  gamepad2.left_bumper;
             double controlClawRotation =  gamepad2.right_trigger - gamepad2.left_trigger;
-            boolean controlClawOpen = gamepad2.b;
-            boolean controlClawClosed = gamepad2.a;
+            boolean controlClawOpen = gamepad2.a;
+            boolean controlClawClosed = gamepad2.b;
             boolean controlSlideOverride = gamepad2.right_bumper;
 
             boolean controlResetSlide = (gamepad1.dpad_down && gamepad1.dpad_right) || (gamepad2.dpad_down && gamepad2.dpad_right);
@@ -149,12 +150,15 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
                 controlSlide *= slideSafetySpeed;
             }
 
-            // Checks if the current horizontal extension is greater than 20 (using some trigonometry) and then only let the slide retract.
+            // Checks if the current horizontal extension is greater than 20 (using some trigonometry) and then retract the slide.
             if ((linearSlide.getCurrentPosition() * slideInchesPerTick * Math.cos(Math.toRadians(wormGear.getCurrentPosition() * wormDegreesPerTick))) > 19.5 && !controlSlideOverride) {
-                if (controlSlide > 0) {
-                    controlSlide = 0;
+                controlSlide = -1;
+            }
+
+            if (wormGear.getCurrentPosition() * wormDegreesPerTick > 90) {
+                if (controlWorm > 0) {
+                    controlWorm = 0;
                 }
-                controlWorm = 0;
             }
 
             // Sets the powers of the slide and worm gear.
@@ -168,7 +172,7 @@ public class MecanumDriveRobotCentric extends LinearOpMode {
             if (controlClawOpen) {
                 claw.setPosition(0.3);
             } else if (controlClawClosed) {
-                claw.setPosition(0.05);
+                claw.setPosition(0);
             }
 
 
