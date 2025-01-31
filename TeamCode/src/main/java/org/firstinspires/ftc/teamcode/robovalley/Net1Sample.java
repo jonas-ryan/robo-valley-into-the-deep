@@ -18,8 +18,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "Obs")
-public class NewNewRedObsAuto extends LinearOpMode {
+@Autonomous(name = "Net1Sample")
+public class Net1Sample extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -35,57 +35,30 @@ public class NewNewRedObsAuto extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            // WAIT
+            // DRIVE TO RIGHT AND DRIVE BACK
             Actions.runBlocking(drive.actionBuilder(intialPose)
-                    .waitSeconds(persist.getTime())
+                    .strafeToLinearHeading(new Vector2d(-20,1), Math.toRadians(90))
+                    .waitSeconds(20)
+                    .build());
+            Actions.runBlocking(drive.actionBuilder(intialPose)
+                    .strafeToLinearHeading(new Vector2d(0,1), Math.toRadians(90))
                     .build());
 
             // FIRST SCORE WITH PRELOAD
             Actions.runBlocking(drive.actionBuilder(intialPose)
+                    .waitSeconds(1)
                     .afterTime(0.0, verticalSlides.verticalSlidesUpChamber())
+                    .afterTime(1.6, intake.intakeOuttake())
+                    .afterTime(2.6, intake.intakeStop())
                     .afterTime(2.0, verticalSlides.verticalSlidesDownScore())
-                    .afterTime(2.2, intake.intakeOuttake())
-                    .afterTime(3, intake.intakeStop())
-                    .strafeToLinearHeading(new Vector2d(-13,30.5), Math.toRadians(90))
+                    .strafeToLinearHeading(new Vector2d(8,26), Math.toRadians(90))
                     .build());
 
-            // PUSH SAMPLES IN AND TURN AROUND
-            Actions.runBlocking(drive.actionBuilder(new Pose2d(-13, 30.5, Math.toRadians(90)))
-                    .afterTime(0.0, verticalSlides.verticalSlidesDownWall())
-                    .strafeToLinearHeading(new Vector2d(22,26), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(22,50), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(30,50), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(30,8), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(30,50), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(42,50), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(42,8), Math.toRadians(90))
-                    .strafeToLinearHeading(new Vector2d(36,20), Math.toRadians(270))
-                    .build());
-
-            // INTAKE FROM WALL
-            Actions.runBlocking(drive.actionBuilder(new Pose2d(36, 20, Math.toRadians(270)))
-                    .afterTime(0.4, perpendicularSlide.perpendicularSlideOut())
-                    .afterTime(0.4, verticalSlides.verticalSlidesUpWall())
-                    .afterTime(0.2, intake.intakeIntake())
-                    .afterTime(2.0, verticalSlides.verticalSlidesUpChamber2())
-                    .afterTime(2.0, intake.intakeStop())
-                    .strafeToLinearHeading(new Vector2d(36,10), Math.toRadians(270))
-                    .build());
-
-            // SCORE SPECIMEN
-            Actions.runBlocking(drive.actionBuilder(new Pose2d(36, 7, Math.toRadians(270)))
+            // DRIVE BACK
+            Actions.runBlocking(drive.actionBuilder(new Pose2d(13, 30.5, Math.toRadians(90)))
                     .afterTime(0.0, perpendicularSlide.perpendicularSlideIn())
-                    .afterTime(2.0, verticalSlides.verticalSlidesUpChamber2())
-                    .afterTime(4.0, verticalSlides.verticalSlidesDownScore())
-                    .afterTime(4.4, intake.intakeOuttake())
-                    .afterTime(5.2, intake.intakeStop())
-                    .strafeToLinearHeading(new Vector2d(-12,25.5), Math.toRadians(90))
-                    .build());
-
-            Actions.runBlocking(drive.actionBuilder(new Pose2d(-12, 25.5, Math.toRadians(90)))
-                    .afterTime(0.0, perpendicularSlide.perpendicularSlideIn())
-                    .afterTime(0.0, verticalSlides.verticalSlidesDownWall())
-                    .strafeToLinearHeading(new Vector2d(35,6), Math.toRadians(270))
+                    .afterTime(0.5, verticalSlides.verticalSlidesDownWall())
+                    .strafeToLinearHeading(new Vector2d(-35,6), Math.toRadians(270))
                     .build());
 
 
@@ -117,14 +90,14 @@ public class NewNewRedObsAuto extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    backSlide.setPower(0.8);
-                    frontSlide.setPower(0.8);
+                    backSlide.setPower(1);
+                    frontSlide.setPower(1);
                     initialized = true;
                 }
 
                 double position = backSlide.getCurrentPosition();
                 packet.put("verticalSlidesPosition", position);
-                if (position < 2875) {
+                if (position < 2775) {
                     return true;
                 } else {
                     backSlide.setPower(0.2);
@@ -151,7 +124,7 @@ public class NewNewRedObsAuto extends LinearOpMode {
 
                 double position = backSlide.getCurrentPosition();
                 packet.put("verticalSlidesPosition", position);
-                if (position < 2500) {
+                if (position < 2600) {
                     return true;
                 } else {
                     backSlide.setPower(0.2);
@@ -163,6 +136,33 @@ public class NewNewRedObsAuto extends LinearOpMode {
 
         public Action verticalSlidesUpChamber2() {
             return new VerticalSlidesUpChamber2();
+        }
+
+        public class VerticalSlidesUpChamber3 implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    backSlide.setPower(0.8);
+                    frontSlide.setPower(0.8);
+                    initialized = true;
+                }
+
+                double position = backSlide.getCurrentPosition();
+                packet.put("verticalSlidesPosition", position);
+                if (position < 2700) {
+                    return true;
+                } else {
+                    backSlide.setPower(0.2);
+                    frontSlide.setPower(0.2);
+                    return false;
+                }
+            }
+        }
+
+        public Action verticalSlidesUpChamber3() {
+            return new VerticalSlidesUpChamber3();
         }
 
         public class VerticalSlidesDownScore implements Action {
@@ -178,7 +178,7 @@ public class NewNewRedObsAuto extends LinearOpMode {
 
                 double position = backSlide.getCurrentPosition();
                 packet.put("verticalSlidesPosition", position);
-                if (position > 2300) {
+                if (position > 2250) {
                     return true;
                 } else {
                     backSlide.setPower(0);
@@ -219,6 +219,60 @@ public class NewNewRedObsAuto extends LinearOpMode {
             return new VerticalSlidesUpWall();
         }
 
+        public class VerticalSlidesUpWall2 implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    backSlide.setPower(0.8);
+                    frontSlide.setPower(0.8);
+                    initialized = true;
+                }
+
+                double position = backSlide.getCurrentPosition();
+                packet.put("verticalSlidesPosition", position);
+                if (position < 1175) {
+                    return true;
+                } else {
+                    backSlide.setPower(0);
+                    frontSlide.setPower(0);
+                    return false;
+                }
+            }
+        }
+
+        public Action verticalSlidesUpWall2() {
+            return new VerticalSlidesUpWall2();
+        }
+
+        public class VerticalSlidesUpWall3 implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    backSlide.setPower(0.8);
+                    frontSlide.setPower(0.8);
+                    initialized = true;
+                }
+
+                double position = backSlide.getCurrentPosition();
+                packet.put("verticalSlidesPosition", position);
+                if (position < 1125) {
+                    return true;
+                } else {
+                    backSlide.setPower(0);
+                    frontSlide.setPower(0);
+                    return false;
+                }
+            }
+        }
+
+        public Action verticalSlidesUpWall3() {
+            return new VerticalSlidesUpWall3();
+        }
+
         public class VerticalSlidesDownWall implements Action {
             private boolean initialized = false;
 
@@ -232,7 +286,7 @@ public class NewNewRedObsAuto extends LinearOpMode {
 
                 double position = backSlide.getCurrentPosition();
                 packet.put("verticalSlidesPosition", position);
-                if (position > 1075) {
+                if (position > 1000) {
                     return true;
                 } else {
                     backSlide.setPower(0);
@@ -244,6 +298,33 @@ public class NewNewRedObsAuto extends LinearOpMode {
 
         public Action verticalSlidesDownWall() {
             return new VerticalSlidesDownWall();
+        }
+
+        public class VerticalSlidesDownWall2 implements Action {
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    backSlide.setPower(-0.8);
+                    frontSlide.setPower(-0.8);
+                    initialized = true;
+                }
+
+                double position = backSlide.getCurrentPosition();
+                packet.put("verticalSlidesPosition", position);
+                if (position > 1500) {
+                    return true;
+                } else {
+                    backSlide.setPower(0);
+                    frontSlide.setPower(0);
+                    return false;
+                }
+            }
+        }
+
+        public Action verticalSlidesDownWall2() {
+            return new VerticalSlidesDownWall2();
         }
     }
 
@@ -340,9 +421,9 @@ public class NewNewRedObsAuto extends LinearOpMode {
         public class IntakeIntake implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                intakeA.setPower(0.2);
-                intakeB.setPower(0.2);
-                packet.put("intakePower", 0.2);
+                intakeA.setPower(0.8);
+                intakeB.setPower(0.8);
+                packet.put("intakePower", 0.8);
                 return false;
             }
         }
@@ -354,9 +435,9 @@ public class NewNewRedObsAuto extends LinearOpMode {
         public class IntakeOuttake implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                intakeA.setPower(-0.2);
-                intakeB.setPower(-0.2);
-                packet.put("intakePower", -0.2);
+                intakeA.setPower(-0.8);
+                intakeB.setPower(-0.8);
+                packet.put("intakePower", -0.8);
                 return false;
             }
         }
