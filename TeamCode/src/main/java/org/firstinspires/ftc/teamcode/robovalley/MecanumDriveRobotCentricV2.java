@@ -29,9 +29,9 @@ public class MecanumDriveRobotCentricV2 extends LinearOpMode {
         CHAMBER
     }
     private slideHeight currentSlideHeight = slideHeight.DONE;
-    private int slideHeightWall = 1150;
+    private int slideHeightWall = 1100;
     private int slideHeightFloor = 350;
-    private int slideHeightChamber = 2750;
+    private int slideHeightChamber = 2850;
     private double wristPosition = 0.05;
 
     private DcMotorEx leftFront = null;
@@ -103,8 +103,8 @@ public class MecanumDriveRobotCentricV2 extends LinearOpMode {
             double controlYaw = gamepad1.left_stick_x;
             boolean controlSlow = gamepad1.left_bumper;
             boolean controlReverse = gamepad1.right_bumper;
-            boolean controlWristLower = gamepad1.a;
-            boolean controlWristRaise = gamepad1.b;
+            double controlWristLower = gamepad1.right_trigger;
+            double controlWristRaise = gamepad1.left_trigger;
 
             double controlVertSlide = -gamepad2.left_stick_y;
             double controlPerpSlide = -gamepad2.right_stick_y;
@@ -163,10 +163,10 @@ public class MecanumDriveRobotCentricV2 extends LinearOpMode {
 
             /*   ARM CODE   */
 
-            if (controlWristRaise) {
+            if (controlWristRaise > 0.5) {
                 wrist.setPosition(0.3);
             }
-            if (controlWristLower) {
+            if (controlWristLower > 0.5) {
                 wrist.setPosition(0.01);
             }
 
@@ -188,6 +188,9 @@ public class MecanumDriveRobotCentricV2 extends LinearOpMode {
             }
             if (currentSlideHeight == slideHeight.DONE) {
                 if (backSlide.getCurrentPosition() > slideVertSafetyMaximum && controlVertSlide > 0 && !controlSlideOverride) {
+                    backSlide.setPower(0);
+                    frontSlide.setPower(0);
+                } else if (backSlide.getCurrentPosition() < 270 && controlVertSlide < 0 && !controlSlideOverride) {
                     backSlide.setPower(0);
                     frontSlide.setPower(0);
                 } else if (backSlide.getCurrentPosition() < slideVertSafetyMinimum && controlVertSlide < 0 && !controlSlideOverride) {
