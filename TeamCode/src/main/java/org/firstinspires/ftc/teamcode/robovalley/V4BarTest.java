@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="V4 Bar Test")
+@Disabled
 public class V4BarTest extends LinearOpMode {
 
     CRServo leftIntake;
