@@ -29,18 +29,10 @@ public class Observation3Sample extends LinearOpMode {
         VerticalSlides verticalSlides = new VerticalSlides(hardwareMap);
         PerpendicularSlide perpendicularSlide = new PerpendicularSlide(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        AutoSetter.Persist persist = new AutoSetter.Persist();
 
         waitForStart();
 
         while (opModeIsActive()) {
-
-            /*
-            // WAIT
-            Actions.runBlocking(drive.actionBuilder(intialPose)
-                    .waitSeconds(persist.getTime())
-                    .build()); */
-
             // FIRST SCORE WITH PRELOAD
             Actions.runBlocking(drive.actionBuilder(intialPose)
                     .afterTime(0.0, verticalSlides.verticalSlidesUpChamber())

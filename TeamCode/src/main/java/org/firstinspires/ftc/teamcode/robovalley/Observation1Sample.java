@@ -29,7 +29,6 @@ public class Observation1Sample extends LinearOpMode {
         VerticalSlides verticalSlides = new VerticalSlides(hardwareMap);
         PerpendicularSlide perpendicularSlide = new PerpendicularSlide(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        AutoSetter.Persist persist = new AutoSetter.Persist();
 
         waitForStart();
 
